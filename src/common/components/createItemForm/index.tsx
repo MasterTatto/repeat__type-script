@@ -1,18 +1,19 @@
 import {IconButton, TextField} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import {createTaskAC} from "@/model/reducers/tasks_reducer.ts";
 import {ChangeEvent, useState} from "react";
-import {useAppDispatch} from "@/common/hooks/hooks.ts";
+import s from "@/features/todoList/ui/todoLists/todoListItem/styles.module.css";
 
-const HeaderAddedForm = ({idTodo}: { idTodo: string }) => {
-    const dispatch = useAppDispatch()
+interface IProps {
+    handleClick: (title: string) => void
+}
 
+const CreateItemForm = ({handleClick}: IProps) => {
     const [value, setValue] = useState<string>('')
     const [error, setError] = useState<string | null>(null)
 
     const handleAddedTaskHelper = () => {
         if (error) return
-        dispatch(createTaskAC({title: value.trim(), idTodo}))
+        handleClick(value.trim())
         setValue('')
     }
 
@@ -25,7 +26,7 @@ const HeaderAddedForm = ({idTodo}: { idTodo: string }) => {
         setValue(e.target.value)
     }
     return (
-        <>
+        <div className={s.added_task}>
             <TextField size={'small'}
                        fullWidth
                        onChange={handleChangeTitleTask}
@@ -39,8 +40,8 @@ const HeaderAddedForm = ({idTodo}: { idTodo: string }) => {
             <IconButton onClick={handleAddedTaskHelper} disabled={Boolean(error)}>
                 <AddIcon/>
             </IconButton>
-        </>
+        </div>
     );
 };
 
-export default HeaderAddedForm;
+export default CreateItemForm;

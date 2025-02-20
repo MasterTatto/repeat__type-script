@@ -1,9 +1,9 @@
-import s from "../styles.module.css";
+import s from "../../styles.module.css";
 import {Checkbox, IconButton} from "@mui/material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import {useAppDispatch} from "@/common/hooks/hooks.ts";
-import {changeStatusTaskAC, changeTitleTaskAC, deleteTaskAC} from "@/model/reducers/tasks_reducer.ts";
-import InputSpan from "@/ui-kit/inputSpan";
+import {changeStatusTaskAC, changeTitleTaskAC, deleteTaskAC} from "@/features/todoList/model/reducers/tasks_reducer.ts";
+import EditableSpan from "@/common/components/editableSpan";
 
 interface IProps {
     isDone: boolean
@@ -20,8 +20,8 @@ const Item = ({isDone, title, id, idTodo}: IProps) => {
             <div className={s.li_item_left}>
                 <Checkbox checked={isDone}
                           onChange={(e) => dispatch(changeStatusTaskAC({id, isDone: e.target.checked, idTodo}))}/>
-                <InputSpan isDone={isDone} title={title}
-                           handleChange={(title: string) => dispatch(changeTitleTaskAC({title, idTodo, id}))}/>
+                <EditableSpan isDone={isDone} title={title}
+                              handleChange={(title: string) => dispatch(changeTitleTaskAC({title, idTodo, id}))}/>
             </div>
             <IconButton onClick={() => dispatch(deleteTaskAC({id, idTodo}))}>
                 <DeleteForeverIcon/>

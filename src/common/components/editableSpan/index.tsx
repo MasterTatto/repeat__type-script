@@ -7,7 +7,7 @@ interface IProps {
     handleChange: (title: string) => void
 }
 
-const InputSpan = ({title, isDone, handleChange}: IProps) => {
+const EditableSpan = ({title, isDone, handleChange}: IProps) => {
     const [isInput, setIsInput] = useState<boolean>(false)
     const [value, setValue] = useState<string>(title)
 
@@ -21,4 +21,4 @@ const InputSpan = ({title, isDone, handleChange}: IProps) => {
                      onDoubleClick={() => setIsInput((prev) => !prev)}>{title}</span>;
 };
 
-export default InputSpan;
+export default EditableSpan;

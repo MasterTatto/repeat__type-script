@@ -1,6 +1,13 @@
-import {Task} from "@/app/App.tsx";
 import {createAction, createReducer, nanoid} from "@reduxjs/toolkit";
 import {deleteTodoListAC, newTodoListAC} from "./todolists_reducer.ts";
+
+export interface ITaskItem {
+    id: string
+    title: string
+    isDone: boolean
+}
+
+export type Task = Record<string, ITaskItem[]>
 
 const initialState: Task = {}
 

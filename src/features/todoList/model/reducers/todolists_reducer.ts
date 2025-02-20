@@ -1,5 +1,11 @@
-import {FilterType, ITodos} from "@/app/App.tsx";
+import {FilterType} from "@/app/App.tsx";
 import {createAction, createReducer, nanoid} from "@reduxjs/toolkit";
+
+export interface ITodos {
+    title: string
+    id: string
+    filter: FilterType
+}
 
 export const deleteTodoListAC = createAction<{ id: string }>("todolists/deleteTodoList")
 export const newTitleTodoListAC = createAction<{ id: string, title: string }>("todolists/newTitleTodoList")

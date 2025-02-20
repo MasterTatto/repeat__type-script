@@ -1,8 +1,8 @@
 .todo {
     border: 1px solid #cecece;
-    /*background-color: coral;*/
     padding: 15px;
     border-radius: 5px;
+    height: fit-content;
 }
 
 .li_item {
