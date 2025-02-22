@@ -8,7 +8,7 @@ const TodoLists = () => {
 
     return (
         <div className={'wrapper'}>
-            {todos.map((el) => {
+            {todos.map((el: any) => {
                 return <TodoListItem key={el.id} title={el.title} idTodo={el.id} filterType={el.filter} />
             })}
         </div>
