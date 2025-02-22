@@ -4,7 +4,7 @@ import { ChangeEvent, useState } from 'react'
 import s from '@/features/todoList/ui/todoLists/todoListItem/styles.module.css'
 
 type IProps = {
-    handleClick: (title: any) => void
+    handleClick: (title: string) => void
 }
 
 const CreateItemForm = ({ handleClick }: IProps) => {
