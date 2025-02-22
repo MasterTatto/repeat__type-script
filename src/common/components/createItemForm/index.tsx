@@ -1,13 +1,13 @@
-import {IconButton, TextField} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import {ChangeEvent, useState} from "react";
-import s from "@/features/todoList/ui/todoLists/todoListItem/styles.module.css";
+import { IconButton, TextField } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import { ChangeEvent, useState } from 'react'
+import s from '@/features/todoList/ui/todoLists/todoListItem/styles.module.css'
 
-interface IProps {
-    handleClick: (title: string) => void
+type IProps = {
+    handleClick: (title: any) => void
 }
 
-const CreateItemForm = ({handleClick}: IProps) => {
+const CreateItemForm = ({ handleClick }: IProps) => {
     const [value, setValue] = useState<string>('')
     const [error, setError] = useState<string | null>(null)
 
@@ -27,21 +27,24 @@ const CreateItemForm = ({handleClick}: IProps) => {
     }
     return (
         <div className={s.added_task}>
-            <TextField size={'small'}
-                       fullWidth
-                       onChange={handleChangeTitleTask}
-                       error={Boolean(error)}
-                       helperText={error ? error : ''}
-                       onKeyDown={(e) => {
-                           if (e.key === 'Enter') {
-                               handleAddedTaskHelper()
-                           }
-                       }} value={value}/>
+            <TextField
+                size={'small'}
+                fullWidth
+                onChange={handleChangeTitleTask}
+                error={Boolean(error)}
+                helperText={error ? error : ''}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        handleAddedTaskHelper()
+                    }
+                }}
+                value={value}
+            />
             <IconButton onClick={handleAddedTaskHelper} disabled={Boolean(error)}>
-                <AddIcon/>
+                <AddIcon />
             </IconButton>
         </div>
-    );
-};
+    )
+}
 
-export default CreateItemForm;
+export default CreateItemForm
