@@ -1,9 +1,10 @@
+import { TaskPriority, TaskStatus } from '@/common/enams/enums.ts'
+
 export interface ITasks {
     description: string
     title: string
-    completed: boolean
-    status: number
-    priority: number
+    status: TaskStatus
+    priority: TaskPriority
     startDate: string
     deadline: string
     id: string
