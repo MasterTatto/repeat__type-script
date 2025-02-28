@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 const TodoLists = () => {
 	const todos = useAppSelector(todoListSelector)
 	const dispatch = useAppDispatch()
-
+	console.log('rerender')
 	useEffect(() => {
 		dispatch(fetchTodoListsTC())
 	}, [])

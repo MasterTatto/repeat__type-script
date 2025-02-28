@@ -5,8 +5,8 @@ import { FilterType } from '@/app/App.tsx'
 import Buttons from '@/features/todoList/ui/todoLists/todoListItem/buttons'
 import Tasks from '@/features/todoList/ui/todoLists/todoListItem/tasks'
 import { useAppDispatch } from '@/common/hooks/hooks.ts'
-import { createTaskAC } from '@/features/todoList/model/reducers/tasks_slice.ts'
 import { memo } from 'react'
+import { createTaskTC } from '@/features/todoList/model/reducers/tasks_slice.ts'
 
 type Props = {
 	title: string
@@ -16,8 +16,9 @@ type Props = {
 
 export const TodoListItem = memo(({ title, filterType, idTodo }: Props) => {
 	const dispatch = useAppDispatch()
+
 	const createTask = (title: string) => {
-		dispatch(createTaskAC({ title: title, idTodo }))
+		dispatch(createTaskTC({ title: title, id: idTodo }))
 	}
 
 	return (

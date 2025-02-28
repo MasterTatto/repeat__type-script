@@ -1,70 +1,107 @@
-import {createSlice, nanoid} from '@reduxjs/toolkit'
-import {createTodoListTC, deleteTodoListTC} from '@/features/todoList/model/reducers/todolists_slice.ts'
+import { createTodoListTC, deleteTodoListTC } from '@/features/todoList/model/reducers/todolists_slice.ts'
+import { createAppSlice } from '@/common/utils/createAppSlice.ts'
+import { ITasks } from '@/features/todoList/api/tasksApi.types.ts'
+import { tasksApi } from '@/features/todoList/api/tasksApi.ts'
+import { toggleStatus } from '@/app/app_slice.ts'
 
-export interface ITaskItem {
-    id: string
-    title: string
-    isDone: boolean
-}
+export type Task = Record<string, ITasks[]>
 
-export type Task = Record<string, ITaskItem[]>
+export const tasksSlice = createAppSlice({
+	initialState: {} as Task,
+	name: 'tasks',
+	reducers: (creators) => {
+		return {
+			fetchTasksTC: creators.asyncThunk(
+				async (arg: { id: string }, thunkAPI) => {
+					try {
+						thunkAPI.dispatch(toggleStatus({ status: 'loading' }))
+						const res = await tasksApi.getTasks(arg.id)
+						thunkAPI.dispatch(toggleStatus({ status: 'succeeded' }))
+						return { items: res.data.items, id: arg.id }
+					} catch (e) {
+						thunkAPI.dispatch(toggleStatus({ status: 'failed' }))
+						thunkAPI.rejectWithValue(e)
+					}
+				},
+				{
+					fulfilled: (state, action) => {
+						state[action.payload!.id] = action.payload!.items
+					},
+				},
+			),
+			createTaskTC: creators.asyncThunk(
+				async (arg: { id: string; title: string }, thunkAPI) => {
+					try {
+						thunkAPI.dispatch(toggleStatus({ status: 'loading' }))
+						const res = await tasksApi.createTask(arg.id, arg.title)
+						thunkAPI.dispatch(toggleStatus({ status: 'succeeded' }))
+						return { item: res.data.data.item, id: arg.id }
+					} catch (e) {
+						thunkAPI.dispatch(toggleStatus({ status: 'failed' }))
+						thunkAPI.rejectWithValue(e)
+					}
+				},
+				{
+					fulfilled: (state, action) => {
+						state[action.payload!.id].unshift(action.payload!.item)
+					},
+				},
+			),
+			deleteTaskTC: creators.asyncThunk(
+				async (arg: { id: string; todoID: string }, thunkAPI) => {
+					try {
+						thunkAPI.dispatch(toggleStatus({ status: 'loading' }))
+						await tasksApi.deleteTask(arg.todoID, arg.id)
+						thunkAPI.dispatch(toggleStatus({ status: 'succeeded' }))
+						return { id: arg.id, todoID: arg.todoID }
+					} catch (e) {
+						thunkAPI.dispatch(toggleStatus({ status: 'failed' }))
+						thunkAPI.rejectWithValue(e)
+					}
+				},
+				{
+					fulfilled: (state, action) => {
+						const index = state[action.payload!.todoID].findIndex((f) => f.id === action.payload!.id)
+						if (index !== -1) state[action.payload!.todoID].splice(index, 1)
+					},
+				},
+			),
+			changeTaskTC: creators.asyncThunk(
+				async (arg: { id: string; todoID: string; item: ITasks }, thunkAPI) => {
+					try {
+						thunkAPI.dispatch(toggleStatus({ status: 'loading' }))
+						const res = await tasksApi.changeTask(arg.todoID, arg.id, arg.item)
+						thunkAPI.dispatch(toggleStatus({ status: 'succeeded' }))
+						return { item: res.data.data.item, id: arg.id, todoID: arg.todoID }
+					} catch (e) {
+						thunkAPI.dispatch(toggleStatus({ status: 'failed' }))
+						thunkAPI.rejectWithValue(e)
+					}
+				},
+				{
+					fulfilled: (state, action) => {
+						const index = state[action.payload!.todoID].findIndex((f) => f.id === action.payload!.id)
+						if (index !== -1) state[action.payload!.todoID][index] = action.payload!.item
+					},
+				},
+			),
+		}
+	},
+	extraReducers: (builder) => {
+		builder
+			.addCase(createTodoListTC.fulfilled, (state, action) => {
+				state[action.payload!.item.id] = []
+			})
 
-export const tasksSlice = createSlice({
-    initialState: {} as Task,
-    name: 'tasks',
-    reducers: (creators) => {
-        return {
-            deleteTaskAC: creators.reducer<{ id: string; idTodo: string }>((state, action) => {
-                const index = state[action.payload.idTodo].findIndex((f) => f.id === action.payload.id)
-                if (index !== -1) state[action.payload.idTodo].splice(index, 1)
-            }),
-            createTaskAC: creators.reducer<{ title: string; idTodo: string }>((state, action) => {
-
-                const newTask = {
-                    isDone: false,
-                    title: action.payload.title,
-                    id: nanoid(),
-                }
-
-                state[action.payload.idTodo].push(newTask)
-            }),
-            changeStatusTaskAC: creators.reducer<{
-                id: string
-                idTodo: string
-                isDone: boolean
-            }>((state, action) => {
-                const element = state[action.payload.idTodo].find((f) => f.id === action.payload.id)
-                if (element) element.isDone = action.payload.isDone
-            }),
-            changeTitleTaskAC: creators.reducer<{
-                id: string
-                idTodo: string
-                title: string
-            }>((state, action) => {
-                const element = state[action.payload.idTodo].find((f) => f.id === action.payload.id)
-                if (element) element.title = action.payload.title
-            }),
-
-            setAllTasks: creators.reducer<{ tasks: Task }>((_, action) => {
-                return action.payload.tasks
-            }),
-        }
-    },
-    extraReducers: (builder) => {
-        builder
-            .addCase(createTodoListTC.fulfilled, (state, action) => {
-                state[action.payload!.item.id] = []
-            })
-
-            .addCase(deleteTodoListTC.fulfilled, (state, action) => {
-                delete state[action.payload!.id]
-            })
-    },
-    selectors: {
-        taskSelector: (state: Task) => state,
-    },
+			.addCase(deleteTodoListTC.fulfilled, (state, action) => {
+				delete state[action.payload!.id]
+			})
+	},
+	selectors: {
+		taskSelector: (state: Task) => state,
+	},
 })
 
-export const {setAllTasks, deleteTaskAC, createTaskAC, changeStatusTaskAC, changeTitleTaskAC} = tasksSlice.actions
+export const { fetchTasksTC, createTaskTC, deleteTaskTC, changeTaskTC } = tasksSlice.actions
 export const tasksReducer = tasksSlice.reducer
-export const {taskSelector} = tasksSlice.selectors
+export const { taskSelector } = tasksSlice.selectors
